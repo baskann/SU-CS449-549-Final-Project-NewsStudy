@@ -815,7 +815,6 @@
             html += '<th>Scroll</th>';
             html += '<th>Score</th>';
             html += '<th>Focus</th>';
-            html += '<th>Date</th>';
             html += '<th>Action</th>';
             html += '</tr>';
 
@@ -830,14 +829,7 @@
                 var article = r.articleId || r.articleTopic || '-';
                 var score = r.comprehensionScore !== undefined ? (r.comprehensionScore === 1 ? '✓' : '✗') : '-';
                 var focus = r.perceivedFocus || '-';
-                var date = r.completedAt || r.finishedAt || '-';
                 var firebaseKey = r._firebaseKey || '';
-
-                // format date nicely
-                if (date !== '-') {
-                    var d = new Date(date);
-                    date = d.toLocaleDateString('en-US');
-                }
 
                 // format gender
                 var genderDisplay = {
@@ -858,7 +850,6 @@
                 html += '<td>' + scroll + '%</td>';
                 html += '<td style="color:' + (r.comprehensionScore === 1 ? '#28a745' : '#dc3545') + '">' + score + '</td>';
                 html += '<td>' + focus + '/7</td>';
-                html += '<td>' + date + '</td>';
                 html += '<td><button class="delete-btn" onclick="deleteResult(\'' + firebaseKey + '\', ' + index + ')">Delete</button></td>';
                 html += '</tr>';
             });
