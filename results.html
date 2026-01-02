@@ -135,6 +135,127 @@
         .data-table td:last-child {
             text-align: center;
         }
+
+        /* Donut Chart Styles */
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .donut-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .donut {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .donut-hole {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .donut-total {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .donut-label {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .chart-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .legend-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-color {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+        }
+
+        .legend-name {
+            font-size: 13px;
+            color: #333;
+        }
+
+        .legend-value {
+            font-weight: 600;
+            color: #1a1a2e;
+            font-size: 14px;
+        }
+
+        .legend-percent {
+            font-size: 12px;
+            color: #666;
+            margin-left: 4px;
+        }
+
+        /* Demographics Section */
+        .demographics-section {
+            margin-bottom: 40px;
+        }
+
+        .section-header {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4a90d9;
+        }
     </style>
 </head>
 <body>
@@ -156,6 +277,14 @@
         <!-- summary cards -->
         <div class="comparison-section" id="comparisonSection">
             <!-- will be filled by js -->
+        </div>
+
+        <!-- Demographics Charts -->
+        <div class="demographics-section">
+            <h2 class="section-header">Participant Demographics</h2>
+            <div class="charts-section" id="demographicsCharts">
+                <!-- Will be filled by JS -->
+            </div>
         </div>
 
         <!-- visual comparison -->
@@ -250,11 +379,181 @@
             // display comparison cards
             displayComparison(stats);
 
+            // display demographics charts
+            displayDemographicsCharts(allResults);
+
             // display chart
             displayChart(stats);
 
             // display table
             displayTable(allResults);
+        }
+
+        // Color palettes for charts
+        var chartColors = {
+            gender: ['#4a90d9', '#e63946', '#28a745', '#ffc107'],
+            age: ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe'],
+            occupation: ['#28a745', '#ffc107', '#17a2b8', '#6f42c1'],
+            ui: ['#e63946', '#28a745'],
+            comprehension: ['#28a745', '#dc3545']  // green for correct, red for incorrect
+        };
+
+        // Create conic gradient for donut chart
+        function createConicGradient(data, colors) {
+            var total = data.reduce(function(sum, item) { return sum + item.value; }, 0);
+            if (total === 0) return 'conic-gradient(#e0e0e0 0deg 360deg)';
+
+            var gradientParts = [];
+            var currentAngle = 0;
+
+            data.forEach(function(item, index) {
+                var percent = (item.value / total) * 100;
+                var angle = (item.value / total) * 360;
+                var color = colors[index % colors.length];
+
+                gradientParts.push(color + ' ' + currentAngle + 'deg ' + (currentAngle + angle) + 'deg');
+                currentAngle += angle;
+            });
+
+            return 'conic-gradient(' + gradientParts.join(', ') + ')';
+        }
+
+        // Create a single chart card
+        function createChartCard(title, data, colors, totalLabel) {
+            var total = data.reduce(function(sum, item) { return sum + item.value; }, 0);
+
+            var legendHtml = data.map(function(item, index) {
+                var percent = total > 0 ? Math.round((item.value / total) * 100) : 0;
+                return `
+                    <div class="legend-item">
+                        <div class="legend-left">
+                            <div class="legend-color" style="background: ${colors[index % colors.length]}"></div>
+                            <span class="legend-name">${item.name}</span>
+                        </div>
+                        <div>
+                            <span class="legend-value">${item.value}</span>
+                            <span class="legend-percent">(${percent}%)</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="chart-card">
+                    <h3 class="chart-title">${title}</h3>
+                    <div class="donut-container">
+                        <div class="donut" style="background: ${createConicGradient(data, colors)}">
+                            <div class="donut-hole">
+                                <span class="donut-total">${total}</span>
+                                <span class="donut-label">${totalLabel}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-legend">
+                        ${legendHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Count occurrences and create data array
+        function countByField(results, field, labelMap) {
+            var counts = {};
+            results.forEach(function(r) {
+                var value = r[field] || 'Unknown';
+                counts[value] = (counts[value] || 0) + 1;
+            });
+
+            return Object.keys(counts).map(function(key) {
+                return {
+                    name: labelMap && labelMap[key] ? labelMap[key] : key,
+                    value: counts[key]
+                };
+            }).sort(function(a, b) { return b.value - a.value; });
+        }
+
+        // Get unique participants for demographics
+        function getUniqueParticipants(results) {
+            var seen = {};
+            return results.filter(function(r) {
+                if (seen[r.participantId]) return false;
+                seen[r.participantId] = true;
+                return true;
+            });
+        }
+
+        // Display all demographics charts
+        function displayDemographicsCharts(results) {
+            var uniqueParticipants = getUniqueParticipants(results);
+            var container = document.getElementById('demographicsCharts');
+
+            if (uniqueParticipants.length === 0) {
+                container.innerHTML = '<p class="no-data">No demographic data available</p>';
+                return;
+            }
+
+            var html = '';
+
+            // Gender chart
+            var genderLabels = {
+                'male': 'Male',
+                'female': 'Female',
+                'other': 'Other',
+                'prefer-not-to-say': 'Prefer not to say',
+                'unknown': 'Unknown'
+            };
+            var genderData = countByField(uniqueParticipants, 'gender', genderLabels);
+            html += createChartCard('Gender Distribution', genderData, chartColors.gender, 'Participants');
+
+            // Age Group chart
+            var ageLabels = {
+                '18-24': '18-24',
+                '25-34': '25-34',
+                '35-44': '35-44',
+                '45-54': '45-54',
+                '55+': '55+',
+                'unknown': 'Unknown'
+            };
+            var ageData = countByField(uniqueParticipants, 'ageGroup', ageLabels);
+            html += createChartCard('Age Distribution', ageData, chartColors.age, 'Participants');
+
+            // Occupation chart
+            var occupationLabels = {
+                'student': 'Student',
+                'working': 'Working',
+                'other': 'Other',
+                'unknown': 'Unknown'
+            };
+            var occupationData = countByField(uniqueParticipants, 'occupation', occupationLabels);
+            html += createChartCard('Occupation', occupationData, chartColors.occupation, 'Participants');
+
+            // UI Version distribution (all results, not unique participants)
+            var uiData = countByField(results, 'uiVersion', { 'A': 'UI-A (Classic)', 'B': 'UI-B (Focus)' });
+            html += createChartCard('Test Distribution', uiData, chartColors.ui, 'Sessions');
+
+            // Comprehension Score by UI Version
+            var uiAResults = results.filter(function(r) { return r.uiVersion === 'A'; });
+            var uiBResults = results.filter(function(r) { return r.uiVersion === 'B'; });
+
+            // UI-A Comprehension
+            var uiACorrect = uiAResults.filter(function(r) { return r.comprehensionScore === 1; }).length;
+            var uiAIncorrect = uiAResults.filter(function(r) { return r.comprehensionScore === 0; }).length;
+            var uiACompData = [
+                { name: 'Correct', value: uiACorrect },
+                { name: 'Incorrect', value: uiAIncorrect }
+            ];
+            html += createChartCard('UI-A Comprehension', uiACompData, chartColors.comprehension, 'Answers');
+
+            // UI-B Comprehension
+            var uiBCorrect = uiBResults.filter(function(r) { return r.comprehensionScore === 1; }).length;
+            var uiBIncorrect = uiBResults.filter(function(r) { return r.comprehensionScore === 0; }).length;
+            var uiBCompData = [
+                { name: 'Correct', value: uiBCorrect },
+                { name: 'Incorrect', value: uiBIncorrect }
+            ];
+            html += createChartCard('UI-B Comprehension', uiBCompData, chartColors.comprehension, 'Answers');
+
+            container.innerHTML = html;
         }
 
         function calculateStats(results) {
@@ -289,6 +588,10 @@
                     <h3>No data yet</h3>
                     <p>Return to the home page and select a UI to test.</p>
                 </div>
+            `;
+
+            document.getElementById('demographicsCharts').innerHTML = `
+                <p class="no-data" style="grid-column: span 4;">No demographic data available yet.</p>
             `;
 
             document.getElementById('dataTableContainer').innerHTML = `
@@ -364,14 +667,19 @@
                 return;
             }
 
-            var html = '<table class="data-table">';
+            var html = '<div style="overflow-x: auto;"><table class="data-table">';
 
             // header
             html += '<tr>';
             html += '<th>Participant</th>';
+            html += '<th>Gender</th>';
+            html += '<th>Age</th>';
             html += '<th>UI</th>';
+            html += '<th>Article</th>';
             html += '<th>Time</th>';
-            html += '<th>Scroll %</th>';
+            html += '<th>Scroll</th>';
+            html += '<th>Score</th>';
+            html += '<th>Focus</th>';
             html += '<th>Date</th>';
             html += '<th>Action</th>';
             html += '</tr>';
@@ -380,28 +688,47 @@
             results.forEach(function(r, index) {
                 var time = r.readingTimeSec || 0;
                 var scroll = r.maxScrollDepth || 0;
-                var pid = r.participantId || r.odsjajdid || '-';
+                var pid = r.participantId || '-';
+                var gender = r.gender || '-';
+                var age = r.ageGroup || '-';
                 var ui = r.uiVersion || '?';
+                var article = r.articleId || r.articleTopic || '-';
+                var score = r.comprehensionScore !== undefined ? (r.comprehensionScore === 1 ? '✓' : '✗') : '-';
+                var focus = r.perceivedFocus || '-';
                 var date = r.completedAt || r.finishedAt || '-';
                 var firebaseKey = r._firebaseKey || '';
 
                 // format date nicely
                 if (date !== '-') {
                     var d = new Date(date);
-                    date = d.toLocaleDateString('en-US') + ' ' + d.toLocaleTimeString('en-US');
+                    date = d.toLocaleDateString('en-US');
                 }
 
+                // format gender
+                var genderDisplay = {
+                    'male': 'M',
+                    'female': 'F',
+                    'other': 'O',
+                    'prefer-not-to-say': '-'
+                };
+                gender = genderDisplay[gender] || gender;
+
                 html += '<tr>';
-                html += '<td>' + pid + '</td>';
+                html += '<td>' + pid.substring(0, 8) + '</td>';
+                html += '<td>' + gender + '</td>';
+                html += '<td>' + age + '</td>';
                 html += '<td>' + ui + '</td>';
+                html += '<td>' + article + '</td>';
                 html += '<td>' + formatTime(time) + '</td>';
                 html += '<td>' + scroll + '%</td>';
+                html += '<td style="color:' + (r.comprehensionScore === 1 ? '#28a745' : '#dc3545') + '">' + score + '</td>';
+                html += '<td>' + focus + '/7</td>';
                 html += '<td>' + date + '</td>';
                 html += '<td><button class="delete-btn" onclick="deleteResult(\'' + firebaseKey + '\', ' + index + ')">Delete</button></td>';
                 html += '</tr>';
             });
 
-            html += '</table>';
+            html += '</table></div>';
 
             document.getElementById('dataTableContainer').innerHTML = html;
         }
@@ -482,7 +809,7 @@
                 return;
             }
 
-            var headers = ['participantId', 'uiVersion', 'readingTimeSec', 'maxScrollDepth', 'sidebarClicks', 'completedAt'];
+            var headers = ['participantId', 'gender', 'ageGroup', 'department', 'occupation', 'uiVersion', 'articleId', 'articleTopic', 'readingTimeSec', 'maxScrollDepth', 'distractionClicks', 'focusModeUsed', 'focusModeTimeSec', 'comprehensionScore', 'perceivedFocus', 'perceivedReadability', 'completedAt'];
             var csvLines = [];
             csvLines.push(headers.join(','));
 

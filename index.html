@@ -1,89 +1,11 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HCI News Study - A/B Test</title>
-    <link rel="stylesheet" href="styles.css">
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <meta http-equiv="refresh" content="0; url=landing.html">
+    <title>Redirecting...</title>
 </head>
 <body>
-    <div class="landing-container">
-        <div class="landing-card">
-            <h1>HCI News Reading Study</h1>
-            <p class="subtitle">A/B Test - Haber Okuma Deneyimi Karşılaştırması</p>
-
-            <div class="study-info">
-                <h3>Çalışma Hakkında</h3>
-                <p>Bu çalışma, HCI (İnsan-Bilgisayar Etkileşimi) yöntemlerinin kullanıcıları sayfada daha uzun süre tutup tutmadığını ölçmektedir.</p>
-                <ul>
-                    <li>Size bir haber gösterilecek, haberi okuyun</li>
-                    <li>Okumayı bitirdiğinizde "Okumayı Tamamladım" butonuna basın</li>
-                    <li>Okuma süreniz otomatik olarak kaydedilecektir</li>
-                </ul>
-            </div>
-
-            <div class="participant-section">
-                <h3>Katılımcı Bilgileri</h3>
-                <div class="form-group">
-                    <label for="participantId">Katılımcı ID:</label>
-                    <input type="text" id="participantId" placeholder="Örnek: P01">
-                </div>
-            </div>
-
-            <div class="test-selection">
-                <h3>Test Seçimi</h3>
-                <div class="test-buttons">
-                    <button class="test-btn" onclick="startTest('A')">
-                        <span class="test-label">UI-A</span>
-                        <span class="test-desc">Klasik Tasarım</span>
-                    </button>
-                    <button class="test-btn experimental" onclick="startTest('B')">
-                        <span class="test-label">UI-B</span>
-                        <span class="test-desc">Focus Frame</span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="quick-links">
-                <a href="results.html" class="link-btn">Sonuçları Gör</a>
-                <a href="landing.html" class="link-btn" style="background:#28a745;">Tam Deney Akışı</a>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function startTest(version) {
-            const participantId = document.getElementById('participantId').value.trim();
-            if (!participantId) {
-                alert('Lutfen Katilimci ID girin!');
-                return;
-            }
-
-            // Store participant info
-            sessionStorage.setItem('participantId', participantId);
-            sessionStorage.setItem('testVersion', version);
-            sessionStorage.setItem('testStartTime', Date.now());
-
-            // For quick test, create a minimal profile
-            var profile = {
-                participantId: participantId,
-                conditionOrder: version === 'A' ? 'AB' : 'BA',
-                topicInterests: ['spor', 'teknoloji']
-            };
-            sessionStorage.setItem('participantProfile', JSON.stringify(profile));
-            sessionStorage.setItem('currentScenario', '1');
-            sessionStorage.setItem('currentUI', version);
-
-            // Navigate to appropriate feed
-            if (version === 'A') {
-                window.location.href = 'feed-a.html';
-            } else {
-                window.location.href = 'feed-b.html';
-            }
-        }
-    </script>
+    <p>Redirecting to study... <a href="landing.html">Click here if not redirected</a></p>
 </body>
 </html>

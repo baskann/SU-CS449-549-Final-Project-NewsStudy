@@ -442,10 +442,20 @@
             var focusRating = parseInt(formData.get('focus'));
             var readabilityRating = parseInt(formData.get('readability'));
 
-            // Combine all data
+            // Combine all data including demographics
             var sessionRecord = {
                 sessionId: 'ses_' + Date.now().toString(36),
                 participantId: profile.participantId || 'unknown',
+                // Demographics
+                gender: profile.gender || 'unknown',
+                ageGroup: profile.ageGroup || 'unknown',
+                department: profile.department || 'unknown',
+                occupation: profile.occupation || 'unknown',
+                newsFrequency: profile.newsFrequency || 'unknown',
+                // Article info
+                articleId: lastSession.articleId || articleTopic,
+                articleTopic: lastSession.articleTopic || articleTopic,
+                // Session data
                 uiVersion: lastSession.uiVersion,
                 scenarioId: 'S' + currentScenario,
                 readingTimeSec: lastSession.readingTimeSec,
@@ -453,6 +463,8 @@
                 distractionClicks: lastSession.distractionClicks || 0,
                 focusModeUsed: lastSession.focusModeUsed || false,
                 focusModeTimeSec: lastSession.focusModeTimeSec || 0,
+                startTime: lastSession.startTime || null,
+                endTime: lastSession.endTime || null,
                 comprehensionScore: mcqAnswer === 'correct' ? 1 : 0,
                 perceivedFocus: focusRating,
                 perceivedReadability: readabilityRating,
