@@ -261,9 +261,26 @@
             color: #2e7d32;
             font-size: 14px;
         }
+
+        /* Timer */
+        .timer {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            background: #e8f5e9;
+            color: #28a745;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
+    <!-- Timer -->
+    <div class="timer" id="timer">00:00</div>
+
     <!-- Clean Header - No distractions -->
     <header class="header">
         <div class="header-content">
@@ -461,6 +478,17 @@
 
         // Initialize
         setupCategories();
+
+        // Timer for feed page
+        function updateTimer() {
+            var elapsed = Math.floor((Date.now() - feedStartTime) / 1000);
+            var mins = Math.floor(elapsed / 60);
+            var secs = elapsed % 60;
+            document.getElementById('timer').textContent =
+                String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+        }
+        setInterval(updateTimer, 1000);
+        updateTimer();
     </script>
 </body>
 </html>

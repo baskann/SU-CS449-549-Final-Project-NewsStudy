@@ -6,7 +6,7 @@
 // ============================================
 // FIREBASE CONFIG
 // ============================================
-const firebaseConfig = {
+var firebaseConfig = {
     apiKey: "AIzaSyBS5G7svfVVDT47YctKali0uppRCEkOI_I",
     authDomain: "hci-news-study.firebaseapp.com",
     databaseURL: "https://hci-news-study-default-rtdb.europe-west1.firebasedatabase.app",
@@ -17,9 +17,9 @@ const firebaseConfig = {
 };
 
 // firebase app reference
-let firebaseApp = null;
-let database = null;
-let firebaseReady = false;
+var firebaseApp = null;
+var database = null;
+var firebaseReady = false;
 
 // try to initialize firebase
 function initFirebase() {
@@ -65,8 +65,8 @@ function saveResult(data) {
 function saveToFirebase(data) {
     try {
         // create a unique key for this result
-        let resultsRef = database.ref('results');
-        let newResultRef = resultsRef.push();
+        var resultsRef = database.ref('results');
+        var newResultRef = resultsRef.push();
 
         newResultRef.set(data)
             .then(function() {

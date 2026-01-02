@@ -358,9 +358,26 @@
             color: #666;
             font-size: 14px;
         }
+
+        /* Timer */
+        .timer {
+            position: fixed;
+            top: 120px;
+            right: 20px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
+    <!-- Timer -->
+    <div class="timer" id="timer">00:00</div>
+
     <!-- Breaking News -->
     <div class="breaking-news">
         <span class="breaking-label">BREAKING</span>
@@ -381,19 +398,16 @@
         </div>
     </header>
 
-    <!-- Categories - ALL 8 VISIBLE (High cognitive load) -->
+    <!-- Categories - ALL VISIBLE (High cognitive load) -->
     <nav class="categories">
         <div class="categories-content">
             <div class="category-item active">Home</div>
-            <div class="category-item">Politics</div>
-            <div class="category-item">Sports</div>
-            <div class="category-item">Economy</div>
-            <div class="category-item">Technology</div>
-            <div class="category-item">Culture & Arts</div>
-            <div class="category-item">Health</div>
-            <div class="category-item">Entertainment</div>
-            <div class="category-item">World</div>
-            <div class="category-item">Lifestyle</div>
+            <div class="category-item" onclick="openArticle('politics')">Politics</div>
+            <div class="category-item" onclick="openArticle('sports')">Sports</div>
+            <div class="category-item" onclick="openArticle('economy')">Economy</div>
+            <div class="category-item" onclick="openArticle('technology')">Technology</div>
+            <div class="category-item" onclick="openArticle('culture')">Culture & Arts</div>
+            <div class="category-item" onclick="openArticle('health')">Health</div>
         </div>
     </nav>
 
@@ -566,6 +580,17 @@
                 sessionStorage.setItem('distractionClicks', distractions + 1);
             });
         });
+
+        // Timer for feed page
+        function updateTimer() {
+            var elapsed = Math.floor((Date.now() - feedStartTime) / 1000);
+            var mins = Math.floor(elapsed / 60);
+            var secs = elapsed % 60;
+            document.getElementById('timer').textContent =
+                String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+        }
+        setInterval(updateTimer, 1000);
+        updateTimer();
     </script>
 </body>
 </html>

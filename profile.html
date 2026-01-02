@@ -364,7 +364,7 @@
 
                 <div class="btn-row">
                     <button type="button" class="btn-back" onclick="location.href='consent.html'">Back</button>
-                    <button type="submit" class="btn-next">Continue</button>
+                    <button type="button" class="btn-next" onclick="submitProfile()">Continue</button>
                 </div>
             </form>
         </div>
@@ -384,9 +384,42 @@
             });
         });
 
-        // Form submission
-        document.getElementById('profileForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        // Submit profile function (called by button click)
+        function submitProfile() {
+            var form = document.getElementById('profileForm');
+
+            // Validate required fields manually
+            var ageGroup = form.querySelector('input[name="ageGroup"]:checked');
+            var gender = form.querySelector('input[name="gender"]:checked');
+            var department = form.querySelector('input[name="department"]:checked');
+            var occupation = form.querySelector('input[name="occupation"]:checked');
+            var newsFreq = form.querySelector('input[name="newsFreq"]:checked');
+            var readStyle = form.querySelector('input[name="readStyle"]:checked');
+
+            if (!ageGroup) {
+                alert('Please select your age group');
+                return;
+            }
+            if (!gender) {
+                alert('Please select your gender');
+                return;
+            }
+            if (!department) {
+                alert('Please select your department');
+                return;
+            }
+            if (!occupation) {
+                alert('Please select your occupation');
+                return;
+            }
+            if (!newsFreq) {
+                alert('Please select how often you read news');
+                return;
+            }
+            if (!readStyle) {
+                alert('Please select your reading style');
+                return;
+            }
 
             // Validate topic selection
             var checkedTopics = document.querySelectorAll('input[name="topics"]:checked');
@@ -396,15 +429,14 @@
             }
 
             // Collect form data
-            var formData = new FormData(this);
             var profile = {
                 participantId: 'P' + Date.now().toString().slice(-6),
-                ageGroup: formData.get('ageGroup'),
-                gender: formData.get('gender'),
-                department: formData.get('department'),
-                occupation: formData.get('occupation'),
-                newsFrequency: formData.get('newsFreq'),
-                readingStyle: formData.get('readStyle'),
+                ageGroup: ageGroup.value,
+                gender: gender.value,
+                department: department.value,
+                occupation: occupation.value,
+                newsFrequency: newsFreq.value,
+                readingStyle: readStyle.value,
                 topicInterests: Array.from(checkedTopics).map(function(cb) { return cb.value; }),
                 conditionOrder: 'AB', // Always A first, then B
                 timestamp: new Date().toISOString()
@@ -415,7 +447,7 @@
 
             // Go to scenario page
             location.href = 'scenario.html';
-        });
+        }
     </script>
 </body>
 </html>

@@ -767,7 +767,12 @@
         // Store the topic for survey
         sessionStorage.setItem('articleTopic', selectedTopic);
 
-        var startTime = Date.now();
+        // Scroll to top when page loads (for article switching)
+        window.scrollTo(0, 0);
+
+        // Get accumulated time from previous articles (for timer continuity)
+        var accumulatedTime = parseInt(sessionStorage.getItem('accumulatedReadingTime') || '0');
+        var startTime = Date.now() - (accumulatedTime * 1000); // Continue from accumulated time
         var startTimeISO = new Date().toISOString();
         var maxScroll = 0;
         var focusModeActive = false;
@@ -946,6 +951,9 @@
             var focusTimeSec = Math.floor(totalFocusModeTime / 1000);
             var articleReadOrder = parseInt(sessionStorage.getItem('articleReadOrder') || '0') + 1;
 
+            // Save accumulated time for timer continuity
+            sessionStorage.setItem('accumulatedReadingTime', readingTime.toString());
+
             var sessionData = {
                 uiVersion: 'B',
                 articleId: selectedTopic,
@@ -1003,6 +1011,7 @@
 
             sessionStorage.setItem('lastSession', JSON.stringify(sessionData));
             sessionStorage.setItem('articleReadOrder', '0'); // Reset for next scenario
+            sessionStorage.setItem('accumulatedReadingTime', '0'); // Reset accumulated time
             location.href = 'survey.html';
         }
     </script>
